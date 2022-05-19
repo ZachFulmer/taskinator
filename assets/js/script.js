@@ -1,4 +1,5 @@
 var taskIdCounter = 0;
+var tasks = [];
 
 var formEl = document.querySelector("#task-form");
 var tasksToDoEl = document.querySelector("#tasks-to-do");
@@ -36,7 +37,8 @@ var taskFormHandler = function(event)
         // package up data as an object
         var taskDataObj = {
             name: taskNameInput,
-            type: taskTypeInput    
+            type: taskTypeInput,
+            status: "to do"    
         };
 
         createTaskEl(taskDataObj);
@@ -64,8 +66,14 @@ var createTaskEl = function(taskDataObj)
 
     var taskActionsEl = createTaskActions(taskIdCounter);
     listItemEl.appendChild(taskActionsEl);
+    taskDataObj.id = taskIdCounter;
+
+    tasks.push(taskDataObj);
+
 
     tasksToDoEl.appendChild(listItemEl);
+    console.log(taskDataObj);
+    console.log(taskDataObj.status);
 
     taskIdCounter++;
 
@@ -161,6 +169,16 @@ var completeEditTask = function(taskName, taskType, taskId)
     taskSelected.querySelector("h3.task-name").textContent = taskName;
     taskSelected.querySelector("span.task-type").textContent = taskType;
 
+    // loop through tasks array and task object with new content
+    for(var i=0; i < tasks.length; i++)
+    {   
+        if(tasks[i].id === parseInt(taskId))
+        {
+            tasks[i].name = taskName;
+            tasks[i].type = taskType;
+        }
+
+    }
     alert("Task Updated!");
 
     formEl.removeAttribute("data-task-id");
@@ -169,6 +187,19 @@ var completeEditTask = function(taskName, taskType, taskId)
 
 var deleteTask = function(taskId)
 {
+    var updatedTaskArr = [];
+
+    // loop through current tasks
+    for(var i = 0; i < tasks.length; i++)
+    {
+        // if tasks[i].id doesnt match the value of taskId, let's keep that task and push it into the new array
+        if(tasks[i].id !== parseInt(taskId))
+        {
+            updatedTaskArr.push(tasks[i]);
+        }
+    }
+    tasks = updatedTaskArr;
+    
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
     taskSelected.remove();
 };
@@ -196,6 +227,15 @@ var taskStatusChangeHandler = function(event)
     {
         tasksCompleteEl.appendChild(taskSelected);
     }
+
+    for(var i = 0; i < tasks.length; i++)
+    {
+        if(tasks[i].id === parseInt(taskId))
+        {
+            tasks[i].status = statusValue;
+        }
+    }
+    console.log(tasks);
 };
 
 
